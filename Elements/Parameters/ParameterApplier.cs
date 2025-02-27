@@ -20,13 +20,13 @@ namespace ASRR.Revit.Core.Elements.Parameters
                 return true;
             }
 
-            Log.Info("Setting {} params", parameters.Count);
+           // Log.Info("Setting {} params", parameters.Count);
 
             foreach (var keyValuePair in parameters)
             {
                 var key = keyValuePair.Key;
                 var value = keyValuePair.Value;
-                Log.Info($"Setting '{key}' to '{value}'");
+               // Log.Info($"Setting '{key}' to '{value}'");
                 var parameter = element.LookupParameter(key);
 
                 if (parameter == null)

@@ -22,7 +22,7 @@ namespace ASRR.Revit.Core.Exporter.Groups.Service
         {
             var copiedGroupTypeSets = new List<GroupTypeSet>();
 
-            using (var transaction = WarningDiscardFailuresPreprocessor.GetTransaction(destinationDoc, _logger))
+            using (var transaction = WarningDiscardFailuresPreprocessor.GetTransaction(destinationDoc))
             {
                 transaction.Start("Copy paste grouptypes");
                 foreach (var groupTypeSet in groupTypeSets)
@@ -54,7 +54,7 @@ namespace ASRR.Revit.Core.Exporter.Groups.Service
 
             Group modelGroup;
 
-            using (var transaction = WarningDiscardFailuresPreprocessor.GetTransaction(doc, _logger))
+            using (var transaction = WarningDiscardFailuresPreprocessor.GetTransaction(doc))
             {
                 transaction.Start("Instantiate modelgroup");
 
@@ -113,7 +113,7 @@ namespace ASRR.Revit.Core.Exporter.Groups.Service
                             break;
                     }
 
-                    _logger.Info("Parameter name: {0}, Parameter value: {1}", paramName, paramValue);
+                    // _logger.Info("Parameter name: {0}, Parameter value: {1}", paramName, paramValue);
 
                     // Add the parameter name and value to the dictionary
                     parameterSet.Add(paramName, paramValue);
