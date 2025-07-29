@@ -1,6 +1,7 @@
 ﻿using ASRR.Revit.Core.Elements;
 using Autodesk.Revit.DB;
 using Autodesk.Revit.UI;
+using eTransmitForRevitDB;
 using NLog;
 using System;
 using System.Collections.Generic;
@@ -93,6 +94,44 @@ namespace ASRR.Revit.Core.Utilities
 
             TaskDialog.Show("Error", "Please select elements to export");
             return null;
+        }
+
+        /// <summary>
+        ///     Purges unused elements from a Revit file and saves as compact file
+        /// </summary>
+        public static bool PurgeAndSaveCompact(UIApplication uiApp, string filePath)
+        {
+            var doc = uiApp.Application.OpenDocumentFile(filePath);
+            
+            var result = Purge(uiApp, doc);
+
+            var saveAsOptions = new SaveAsOptions
+            {
+                OverwriteExistingFile = true,
+                Compact = true
+            };
+            doc.SaveAs(filePath, saveAsOptions);
+            doc.Close(true);
+
+            FileUtilities.RemoveBackUpFilesFromDirectory(new FileInfo(filePath).Directory.FullName);
+            return result;
+        }
+
+        /// <summary>
+        ///     Purges unused elements from a Revit file
+        /// </summary>
+        public static bool Purge(UIApplication app, Document doc)
+        {
+            var eTransmitUpgradeOMatic = new eTransmitUpgradeOMatic(app.Application);
+
+            // purges come in threes 😛 (purging 3 times to get rid of all layers of depending elements)
+            for (int i = 0; i < 3; i++)
+            {
+                var result = eTransmitUpgradeOMatic.purgeUnused(doc);
+                if (result != UpgradeFailureType.UpgradeSucceeded) return false;
+            }
+
+            return true;
         }
 
         public static CopyPasteOptions CopyPasteOptions()
