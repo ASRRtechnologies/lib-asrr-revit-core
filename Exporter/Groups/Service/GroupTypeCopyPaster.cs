@@ -61,6 +61,13 @@ namespace ASRR.Revit.Core.Exporter.Groups.Service
                 modelGroup = doc.Create.PlaceGroup(groupTypeSet.PositionOffset.PositionInFeet,
                     groupTypeSet.ModelGroupType);
 
+                if (modelGroup == null)
+                {
+                    _logger.Warn("Failed to place model group");
+                    transaction.RollBack();
+                    return null;
+                }
+
                 Dictionary<string, object> parameterSet = new Dictionary<string, object>();
 
                 // Get the parameters from the element
