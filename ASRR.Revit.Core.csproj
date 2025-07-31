@@ -129,6 +129,7 @@
     <Compile Include="Exporter\GLTF\Utils\SettingsConfig.cs" />
     <Compile Include="Exporter\GLTF\Utils\Util.cs" />
     <Compile Include="Model\CopyPasteConfiguration.cs" />
+    <Compile Include="Model\FamilyLoadOptions.cs" />
     <Compile Include="RevitModel\FamilyPlacer.cs" />
     <Compile Include="RevitModel\ModelElementCollector.cs" />
     <Compile Include="RevitModel\ModelElementCopyPaster.cs" />

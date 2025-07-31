@@ -103,7 +103,7 @@ namespace ASRR.Revit.Core.Utilities
         {
             var doc = uiApp.Application.OpenDocumentFile(filePath);
             
-            var result = Purge(uiApp, doc);
+            var result = Purge(doc);
 
             var saveAsOptions = new SaveAsOptions
             {
@@ -120,9 +120,9 @@ namespace ASRR.Revit.Core.Utilities
         /// <summary>
         ///     Purges unused elements from a Revit file
         /// </summary>
-        public static bool Purge(UIApplication app, Document doc)
+        public static bool Purge(Document doc)
         {
-            var eTransmitUpgradeOMatic = new eTransmitUpgradeOMatic(app.Application);
+            var eTransmitUpgradeOMatic = new eTransmitUpgradeOMatic(doc.Application);
 
             // purges come in threes 😛 (purging 3 times to get rid of all layers of depending elements)
             for (int i = 0; i < 3; i++)
