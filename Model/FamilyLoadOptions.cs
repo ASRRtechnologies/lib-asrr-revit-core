@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace ASRR.Revit.Core.Model
 {
-    class FamilyLoadOptions : IFamilyLoadOptions
+    public class FamilyLoadOptions : IFamilyLoadOptions
     {
         public bool OnFamilyFound(
           bool familyInUse,
