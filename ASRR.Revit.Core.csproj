@@ -156,6 +156,7 @@
     <Compile Include="Model\VectorRotation.cs" />
     <Compile Include="RevitModel\ModelFetcher.cs" />
     <Compile Include="RevitModel\ModelPlacer.cs" />
+    <Compile Include="Utilities\GroupUtilities.cs" />
     <Compile Include="Utilities\LogUtilities.cs" />
     <Compile Include="Utilities\UseDestinationHandler.cs" />
     <Compile Include="Model\IPosition.cs" />
