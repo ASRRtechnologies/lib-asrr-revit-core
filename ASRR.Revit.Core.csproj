@@ -54,13 +54,17 @@
       <HintPath>libs\eTransmitForRevitDB.dll</HintPath>
     </Reference>
     <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.IO.Compression" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.ServiceModel" />
     <Reference Include="System.Transactions" />
+    <Reference Include="System.Windows" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -100,6 +104,75 @@
     <Compile Include="Exporter\GLTF\Export\RevitGrids.cs" />
     <Compile Include="Exporter\GLTF\Export\RevitMaterials.cs" />
     <Compile Include="Exporter\GLTF\Export\ZIP.cs" />
+    <Compile Include="Exporter\GLTF\Leia\Core\glTF.cs" />
+    <Compile Include="Exporter\GLTF\Leia\Core\GLTFAccessor.cs" />
+    <Compile Include="Exporter\GLTF\Leia\Core\GLTFAttribute.cs" />
+    <Compile Include="Exporter\GLTF\Leia\Core\GLTFBinaryData.cs" />
+    <Compile Include="Exporter\GLTF\Leia\Core\GLTFBuffer.cs" />
+    <Compile Include="Exporter\GLTF\Leia\Core\GLTFBufferView.cs" />
+    <Compile Include="Exporter\GLTF\Leia\Core\GlTFExportContext.cs" />
+    <Compile Include="Exporter\GLTF\Leia\Core\GLTFExtras.cs" />
+    <Compile Include="Exporter\GLTF\Leia\Core\GLTFImage.cs" />
+    <Compile Include="Exporter\GLTF\Leia\Core\GLTFMaterial.cs" />
+    <Compile Include="Exporter\GLTF\Leia\Core\GLTFMesh.cs" />
+    <Compile Include="Exporter\GLTF\Leia\Core\GLTFMeshPrimitive.cs" />
+    <Compile Include="Exporter\GLTF\Leia\Core\GLTFNode.cs" />
+    <Compile Include="Exporter\GLTF\Leia\Core\glTFPBR.cs" />
+    <Compile Include="Exporter\GLTF\Leia\Core\GLTFScene.cs" />
+    <Compile Include="Exporter\GLTF\Leia\Core\GLTFTextureInfo.cs" />
+    <Compile Include="Exporter\GLTF\Leia\Core\GLTFVersion.cs" />
+    <Compile Include="Exporter\GLTF\Leia\Core\IndexedDictionary.cs" />
+    <Compile Include="Exporter\GLTF\Leia\EportUtils\ElementValidations.cs" />
+    <Compile Include="Exporter\GLTF\Leia\EportUtils\GLTFNodeActions.cs" />
+    <Compile Include="Exporter\GLTF\Leia\Export\BinFile.cs" />
+    <Compile Include="Exporter\GLTF\Leia\Export\BufferConfig.cs" />
+    <Compile Include="Exporter\GLTF\Leia\Export\Compression.cs" />
+    <Compile Include="Exporter\GLTF\Leia\Export\Draco.cs" />
+    <Compile Include="Exporter\GLTF\Leia\Export\FileExport.cs" />
+    <Compile Include="Exporter\GLTF\Leia\Export\GlbBinInfo.cs" />
+    <Compile Include="Exporter\GLTF\Leia\Export\GlbFile.cs" />
+    <Compile Include="Exporter\GLTF\Leia\Export\GlbHeaderInfo.cs" />
+    <Compile Include="Exporter\GLTF\Leia\Export\GlbJsonInfo.cs" />
+    <Compile Include="Exporter\GLTF\Leia\Export\GltfJson.cs" />
+    <Compile Include="Exporter\GLTF\Leia\Export\MeshOpt.cs" />
+    <Compile Include="Exporter\GLTF\Leia\Export\RevitGrids.cs" />
+    <Compile Include="Exporter\GLTF\Leia\Export\ZIP.cs" />
+    <Compile Include="Exporter\GLTF\Leia\Materials\AssetProperties.cs" />
+    <Compile Include="Exporter\GLTF\Leia\Materials\BitmapsUtils.cs" />
+    <Compile Include="Exporter\GLTF\Leia\Materials\MaterialProperties.cs" />
+    <Compile Include="Exporter\GLTF\Leia\Materials\MaterialTextures.cs" />
+    <Compile Include="Exporter\GLTF\Leia\Materials\RevitMaterials.cs" />
+    <Compile Include="Exporter\GLTF\Leia\Materials\TextureLocation.cs" />
+    <Compile Include="Exporter\GLTF\Leia\Model\FixedObject.cs" />
+    <Compile Include="Exporter\GLTF\Leia\Model\FixedObjects.cs" />
+    <Compile Include="Exporter\GLTF\Leia\Model\GeometryDataObject.cs" />
+    <Compile Include="Exporter\GLTF\Leia\Model\GlbComponents.cs" />
+    <Compile Include="Exporter\GLTF\Leia\Model\IObject.cs" />
+    <Compile Include="Exporter\GLTF\Leia\Model\IObjects.cs" />
+    <Compile Include="Exporter\GLTF\Leia\Model\LoadContext.cs" />
+    <Compile Include="Exporter\GLTF\Leia\Model\MaterialCacheDTO.cs" />
+    <Compile Include="Exporter\GLTF\Leia\Model\MovableObject.cs" />
+    <Compile Include="Exporter\GLTF\Leia\Model\MovableObjects.cs" />
+    <Compile Include="Exporter\GLTF\Leia\Model\Payload.cs" />
+    <Compile Include="Exporter\GLTF\Leia\Model\PointIntObject.cs" />
+    <Compile Include="Exporter\GLTF\Leia\Model\Preferences.cs" />
+    <Compile Include="Exporter\GLTF\Leia\Model\RevitGridParametersObject.cs" />
+    <Compile Include="Exporter\GLTF\Leia\Model\Room.cs" />
+    <Compile Include="Exporter\GLTF\Leia\Model\UnitObject.cs" />
+    <Compile Include="Exporter\GLTF\Leia\Model\VertexLookupIntObject.cs" />
+    <Compile Include="Exporter\GLTF\Leia\Transform\ModelRotation.cs" />
+    <Compile Include="Exporter\GLTF\Leia\Transform\ModelScale.cs" />
+    <Compile Include="Exporter\GLTF\Leia\Transform\ModelTraslation.cs" />
+    <Compile Include="Exporter\GLTF\Leia\Utils\Collectors.cs" />
+    <Compile Include="Exporter\GLTF\Leia\Utils\FilesHelper.cs" />
+    <Compile Include="Exporter\GLTF\Leia\Utils\GeometryUtils.cs" />
+    <Compile Include="Exporter\GLTF\Leia\Utils\GLTFBinaryDataUtils.cs" />
+    <Compile Include="Exporter\GLTF\Leia\Utils\glTFExportUtils.cs" />
+    <Compile Include="Exporter\GLTF\Leia\Utils\Hyperlink.cs" />
+    <Compile Include="Exporter\GLTF\Leia\Utils\MaterialUtils.cs" />
+    <Compile Include="Exporter\GLTF\Leia\Utils\RevitIniReader.cs" />
+    <Compile Include="Exporter\GLTF\Leia\Utils\Theme.cs" />
+    <Compile Include="Exporter\GLTF\Leia\Utils\Util.cs" />
     <Compile Include="Exporter\GLTF\Model\FixedObject.cs" />
     <Compile Include="Exporter\GLTF\Model\FixedObjects.cs" />
     <Compile Include="Exporter\GLTF\Model\GeometryDataObject.cs" />
@@ -209,7 +282,6 @@
       <Name>ASRR.Core</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
   <ItemGroup>
     <Content Include="libs\eTransmitForRevitDB.dll" />
   </ItemGroup>
