@@ -59,8 +59,9 @@ namespace ASRR.Revit.Core.Http
 
         public T1 PostForObject<T1, T2>(string path, T2 content)
         {
+            _logger.Info($"Posting to {path} content: {content}");
             var response = RunTask(Task.Run(async () => await _httpClient.PostAsJsonAsync(CleanUpPath(path), content)));
-           // _logger.Info(response);
+            _logger.Info(response);
             if (response != null) return RunTask(Task.Run(async () => await response.Content.ReadFromJsonAsync<T1>()));
             _logger.Error($"Failed to POST object to {path}");
             return default;
