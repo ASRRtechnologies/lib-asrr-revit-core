@@ -87,7 +87,7 @@ namespace ASRR.Revit.Core.Exporter.GLTF.Leia.Core
             {
                 relocateTo0 = false,
                 path = exportPath,
-                compression = CompressionEnum.Meshopt
+                //compression = CompressionEnum.Meshopt
             };
             preferences.path = exportPath;
 
