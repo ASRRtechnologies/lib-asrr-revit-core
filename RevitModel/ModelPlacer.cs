@@ -60,9 +60,9 @@ namespace ASRR.Revit.Core.RevitModel
                    
                         // _logger.Info($"Copied grouptypeset has {copiedGroupTypeSet.AttachedDetailGroupTypes.Count} atached deetail groups");
                     _groupTypeCopyPaster.PlaceModelGroup(doc, copiedGroupTypeSet, group, new MillimeterPosition(position) );
-                    sourceDoc.Close(false);
                 }
 
+                sourceDoc.Close(false);
                 //Copy all models that don't conflict with existing grouptypes in the destination document
                 // var copyPastableElementIds = modelElementsInSourceDoc.Except(existingModelGroups).Select(e => e.Id).Distinct().ToList();
                 // if (copyPastableElementIds.Any())
