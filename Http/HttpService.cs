@@ -30,40 +30,41 @@ namespace ASRR.Revit.Core.Http
 
         public HttpResponseMessage Get(string path)
         {
-            var response = RunTask(Task.Run(async () => await _httpClient.GetAsync(CleanUpPath(path))));
-            if (response == null) _logger.Error($"Failed to GET {path}");
+            var response = RunTask(Task.Run(async () => await _httpClient.GetAsync(CleanUpPath(path))), path);
+            if (response == null) _logger.Error($"Failed to GET {path} — response was null (check earlier log entries for the underlying exception)");
             return response;
         }
 
         public T GetForObject<T>(string path)
         {
-            var response = RunTask(Task.Run(async () => await _httpClient.GetFromJsonAsync<T>(CleanUpPath(path))));
-            if (response == null) _logger.Error($"Failed to GET object from {path}");
+            _logger.Debug($"GET object from {path} (type: {typeof(T).Name})");
+            var response = RunTask(Task.Run(async () => await _httpClient.GetFromJsonAsync<T>(CleanUpPath(path))), path);
+            if (response == null) _logger.Error($"Failed to GET object from {path} — response was null (check earlier log entries for the underlying exception)");
             return response;
         }
 
 
         public byte[] Download(string path)
         {
-            var response = RunTask(Task.Run(async () => await _httpClient.GetByteArrayAsync(CleanUpPath(path))));
-            if (response == null) _logger.Error($"Failed to download from {path}");
+            var response = RunTask(Task.Run(async () => await _httpClient.GetByteArrayAsync(CleanUpPath(path))), path);
+            if (response == null) _logger.Error($"Failed to download from {path} — response was null (check earlier log entries for the underlying exception)");
             return response;
         }
 
         public HttpResponseMessage Post(string path, HttpContent content)
         {
-            var response = RunTask(Task.Run(async () => await _httpClient.PostAsync(CleanUpPath(path), content)));
-            if (response == null) _logger.Error($"Failed to POST to {path}");
+            var response = RunTask(Task.Run(async () => await _httpClient.PostAsync(CleanUpPath(path), content)), path);
+            if (response == null) _logger.Error($"Failed to POST to {path} — response was null (check earlier log entries for the underlying exception)");
             return response;
         }
 
         public T1 PostForObject<T1, T2>(string path, T2 content)
         {
             _logger.Info($"Posting to {path} content: {content}");
-            var response = RunTask(Task.Run(async () => await _httpClient.PostAsJsonAsync(CleanUpPath(path), content)));
+            var response = RunTask(Task.Run(async () => await _httpClient.PostAsJsonAsync(CleanUpPath(path), content)), path);
             _logger.Info(response);
-            if (response != null) return RunTask(Task.Run(async () => await response.Content.ReadFromJsonAsync<T1>()));
-            _logger.Error($"Failed to POST object to {path}");
+            if (response != null) return RunTask(Task.Run(async () => await response.Content.ReadFromJsonAsync<T1>()), path);
+            _logger.Error($"Failed to POST object to {path} — response was null (check earlier log entries for the underlying exception)");
             return default;
         }
 
@@ -94,7 +95,7 @@ namespace ASRR.Revit.Core.Http
             return path == null ? throw new ArgumentNullException(nameof(path)) : CombineUris(path);
         }
 
-        private static T RunTask<T>(Task<T> task)
+        private static T RunTask<T>(Task<T> task, string path = null)
         {
             try
             {
@@ -102,8 +103,12 @@ namespace ASRR.Revit.Core.Http
             }
             catch (Exception ex)
             {
-                var message = ex.InnerException?.Message ?? ex.Message;
-                _logger.Error($"Failed to make request. Exception: {message}");
+                var innermost = ex;
+                while (innermost.InnerException != null) innermost = innermost.InnerException;
+
+                _logger.Error(ex.InnerException ?? ex,
+                    $"HTTP request failed{(path != null ? $" for '{path}'" : "")}. " +
+                    $"Root cause: [{innermost.GetType().Name}] {innermost.Message}");
                 return default;
             }
             return task.IsCompleted ? task.Result : default;
