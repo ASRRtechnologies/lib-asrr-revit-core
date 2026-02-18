@@ -12,6 +12,7 @@ namespace ASRR.Revit.Core.Http
     {
         private static readonly Logger _logger = LogManager.GetCurrentClassLogger();
         private readonly HttpClient _httpClient;
+        private string _baseAddress;
 
         public HttpService()
         {
@@ -23,49 +24,70 @@ namespace ASRR.Revit.Core.Http
             _httpClient = httpClient ?? new HttpClient();
         }
 
-        public void SetBaseAddress(string baseUri)
+        public void SetBaseAddress(string baseAddress, bool initClient = false)
         {
-            _httpClient.BaseAddress = new Uri(baseUri);
+            if (baseAddress == null) throw new ArgumentNullException(nameof(baseAddress));
+            if (_httpClient.BaseAddress != null)
+                throw new InvalidOperationException($"Cannot set base address. HttpClient was initialized with base address: '{_httpClient.BaseAddress}'");
+            if (initClient) _httpClient.BaseAddress = new Uri(baseAddress);
+            else _baseAddress = baseAddress;
+        }
+
+        public void ResetApiKey(string apiKey)
+        {
+            if (_httpClient.DefaultRequestHeaders.Contains("X-API-Key"))
+                _httpClient.DefaultRequestHeaders.Remove("X-API-Key");
+            _httpClient.DefaultRequestHeaders.Add("X-API-Key", apiKey);
         }
 
         public HttpResponseMessage Get(string path)
         {
-            var response = RunTask(Task.Run(async () => await _httpClient.GetAsync(CleanUpPath(path))), path);
-            if (response == null) _logger.Error($"Failed to GET {path} — response was null (check earlier log entries for the underlying exception)");
+            var url = GetCleanUrl(path);
+            var response = RunTask(Task.Run(async () => await _httpClient.GetAsync(url)), path);
+            if (response == null) _logger.Error($"Failed to GET {url} — response was null (check earlier log entries for the underlying exception)");
             return response;
         }
 
         public T GetForObject<T>(string path)
         {
-            _logger.Debug($"GET object from {path} (type: {typeof(T).Name})");
-            var response = RunTask(Task.Run(async () => await _httpClient.GetFromJsonAsync<T>(CleanUpPath(path))), path);
-            if (response == null) _logger.Error($"Failed to GET object from {path} — response was null (check earlier log entries for the underlying exception)");
+            var url = GetCleanUrl(path);
+            _logger.Debug($"GET object from {url} (type: {typeof(T).Name})");
+            var response = RunTask(Task.Run(async () => await _httpClient.GetFromJsonAsync<T>(url)), path);
+            if (response == null) _logger.Error($"Failed to GET object from {url} — response was null (check earlier log entries for the underlying exception)");
             return response;
         }
 
 
         public byte[] Download(string path)
         {
-            var response = RunTask(Task.Run(async () => await _httpClient.GetByteArrayAsync(CleanUpPath(path))), path);
-            if (response == null) _logger.Error($"Failed to download from {path} — response was null (check earlier log entries for the underlying exception)");
+            var url = GetCleanUrl(path);
+            var response = RunTask(Task.Run(async () => await _httpClient.GetByteArrayAsync(url)), path);
+            if (response == null) _logger.Error($"Failed to download from {url} — response was null (check earlier log entries for the underlying exception)");
             return response;
         }
 
         public HttpResponseMessage Post(string path, HttpContent content)
         {
-            var response = RunTask(Task.Run(async () => await _httpClient.PostAsync(CleanUpPath(path), content)), path);
-            if (response == null) _logger.Error($"Failed to POST to {path} — response was null (check earlier log entries for the underlying exception)");
+            var url = GetCleanUrl(path);
+            var response = RunTask(Task.Run(async () => await _httpClient.PostAsync(url, content)), path);
+            if (response == null) _logger.Error($"Failed to POST to {url} — response was null (check earlier log entries for the underlying exception)");
             return response;
         }
 
         public T1 PostForObject<T1, T2>(string path, T2 content)
         {
-            _logger.Info($"Posting to {path} content: {content}");
-            var response = RunTask(Task.Run(async () => await _httpClient.PostAsJsonAsync(CleanUpPath(path), content)), path);
+            var url = GetCleanUrl(path);
+            _logger.Info($"Posting to {url} content: {content}");
+            var response = RunTask(Task.Run(async () => await _httpClient.PostAsJsonAsync(url, content)), path);
             _logger.Info(response);
             if (response != null) return RunTask(Task.Run(async () => await response.Content.ReadFromJsonAsync<T1>()), path);
-            _logger.Error($"Failed to POST object to {path} — response was null (check earlier log entries for the underlying exception)");
+            _logger.Error($"Failed to POST object to {url} — response was null (check earlier log entries for the underlying exception)");
             return default;
+        }
+
+        private string GetCleanUrl(string path)
+        {
+            return _httpClient.BaseAddress == null ? CombineUris(_baseAddress, path) : CleanUpPath(path);
         }
 
         public static string CombineUris(params string[] uris)
