@@ -1,4 +1,5 @@
 ﻿using Autodesk.Revit.DB;
+using Autodesk.Revit.Exceptions;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -36,7 +37,10 @@ namespace ASRR.Revit.Core.RevitModel
                 IEnumerable<Element> modelElements = collector.WherePasses(GetModelCategoryFilter(doc)).ToElements();
 
                 //Filter out everything that isn't top level (and filter out duplicates)
-                var parentElements = modelElements.Select(element => GetParentModelElement(doc, element)).ToList();
+                var parentElements = modelElements
+                    .Select(element => GetParentModelElement(doc, element))
+                    .Where(element => element != null)
+                    .ToList();
                 parentElements = parentElements.GroupBy(e => e.Id).Select(g => g.First()).ToList();
 
                 return parentElements.Where(IsModelElement);
@@ -46,9 +50,17 @@ namespace ASRR.Revit.Core.RevitModel
         //Returns the highest element in the hierarchy of a given element
         public static Element GetParentModelElement(Document doc, Element element)
         {
+            if (element == null || !element.IsValidObject)
+                return null;
+
             //See if it is a member of a group
             if (element.GroupId != ElementId.InvalidElementId)
-                return GetParentModelElement(doc, doc.GetElement(element.GroupId));
+            {
+                var parentGroup = doc.GetElement(element.GroupId);
+                if (parentGroup == null || !parentGroup.IsValidObject)
+                    return null;
+                return GetParentModelElement(doc, parentGroup);
+            }
 
             //If the element is a family instance, we check for its supercomponent
             if (element is FamilyInstance familyInstance && familyInstance.SuperComponent != null)
@@ -60,8 +72,18 @@ namespace ASRR.Revit.Core.RevitModel
 
         public static bool IsModelElement(Element element)
         {
-            if (element.Category == null || element.ViewSpecific || element.Location == null)
+            if (element == null || !element.IsValidObject)
                 return false;
+
+            try
+            {
+                if (element.Category == null || element.ViewSpecific || element.Location == null)
+                    return false;
+            }
+            catch (InvalidObjectException)
+            {
+                return false;
+            }
 
             return element.Category.CategoryType == CategoryType.Model ||
                    element.Category.CategoryType == CategoryType.Internal;
