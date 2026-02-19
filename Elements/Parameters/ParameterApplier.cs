@@ -16,7 +16,7 @@ namespace ASRR.Revit.Core.Elements.Parameters
         {
             if (parameters.Count == 0)
             {
-                Log.Info("No parameters to be set");
+                Log.Debug("No parameters to be set");
                 return true;
             }
 

@@ -34,19 +34,19 @@ namespace ASRR.Revit.Core.Elements.Placement
                 transaction.Start("Place family instance");
                 var newFamilyInstance =
                     doc.Create.NewFamilyInstance(location, symbol, level, StructuralType.NonStructural);
-                Log.Info(
+                Log.Debug(
                     $"Placed new family instance at {location} on level {level?.Elevation}, id is '{newFamilyInstance.Id}'");
                 var instanceLocation = ((LocationPoint)newFamilyInstance.Location).Point;
 
                 if (rotation != 0.0)
                 {
-                    Log.Info($"Rotating element {rotation} degrees");
+                    Log.Debug($"Rotating element {rotation} degrees");
                     ElementRotator.RotateElement(newFamilyInstance, rotation, location);
                 }
 
                 if (mirrored)
                 {
-                    Log.Info("Mirroring element");
+                    Log.Debug("Mirroring element");
                     using (var plane = Plane.CreateByNormalAndOrigin(XYZ.BasisX, location)) // ZX
                     {
                         ElementTransformUtils.MirrorElements(doc, new[] { newFamilyInstance.Id }, plane, false);
@@ -78,12 +78,12 @@ namespace ASRR.Revit.Core.Elements.Placement
                 transaction.Start("Place family instance");
                 var newFamilyInstance =
                     doc.Create.NewFamilyInstance(curve, symbol, level, StructuralType.NonStructural);
-                Log.Info(
+                Log.Debug(
                     $"Placed new family instance based on curve {curve.GetEndPoint(0)} {curve.Length} on level {level?.Elevation}, id is '{newFamilyInstance.Id}'");
 
                 if (mirrored)
                 {
-                    Log.Info("Mirroring element");
+                    Log.Debug("Mirroring element");
                     using (var plane = Plane.CreateByNormalAndOrigin(XYZ.BasisX, curve.GetEndPoint(0))) // ZX
                     {
                         ElementTransformUtils.MirrorElements(doc, new[] { newFamilyInstance.Id }, plane, false);

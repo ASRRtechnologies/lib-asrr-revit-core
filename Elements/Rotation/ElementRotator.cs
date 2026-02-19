@@ -21,15 +21,15 @@ namespace ASRR.Revit.Core.Elements.Rotation
                 var cc = new XYZ(aa.X, aa.Y, aa.Z + 10);
                 var axis = Line.CreateBound(aa, cc);
                 rotated = elementPoint.Rotate(axis, ConvertToRadians(degrees));
-                Log.Info($"Rotated around point {aa.X}, {aa.Y}, {aa.Z}");
-                Log.Info($"C Rotated around point {cc.X}, {cc.Y}, {cc.Z}");
+                Log.Debug($"Rotated around point {aa.X}, {aa.Y}, {aa.Z}");
+                Log.Debug($"C Rotated around point {cc.X}, {cc.Y}, {cc.Z}");
             }
             else
             {
-                Log.Info("elementPoint is null");
+                Log.Debug("elementPoint is null");
             }
 
-            Log.Info($"rotated : '{rotated}'");
+            Log.Debug($"rotated : '{rotated}'");
             return rotated;
         }
 

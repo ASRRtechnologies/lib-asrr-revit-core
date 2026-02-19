@@ -28,7 +28,7 @@ namespace ASRR.Revit.Core.Utilities
             var parameter = wall.get_Parameter(BuiltInParameter.WALL_STRUCTURAL_USAGE_PARAM);
             if (parameter == null) return false;
 
-            Log.Info($"Found parameter for element {wall.Name}: {parameter.AsValueString()}");
+            Log.Debug($"Found parameter for element {wall.Name}: {parameter.AsValueString()}");
             return parameter.AsValueString() == "Bearing";
         }
 

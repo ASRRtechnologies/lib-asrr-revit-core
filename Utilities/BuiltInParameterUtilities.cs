@@ -18,7 +18,7 @@ namespace ASRR.Revit.Core.Elements.Parameters
             try
             {
                 string assemblyCode = element.get_Parameter(BuiltInParameter.UNIFORMAT_CODE).AsString();
-                Log.Info($"assemblyCode is '{assemblyCode}'");
+                Log.Debug($"assemblyCode is '{assemblyCode}'");
                 return assemblyCode;
             }
             catch (Exception)
@@ -32,7 +32,7 @@ namespace ASRR.Revit.Core.Elements.Parameters
             try
             {
                 string assemblyName = element.get_Parameter(BuiltInParameter.UNIFORMAT_DESCRIPTION).AsString();
-                Log.Info($"assemblyName is '{assemblyName}'");
+                Log.Debug($"assemblyName is '{assemblyName}'");
                 return assemblyName;
             }
             catch (Exception)
@@ -64,7 +64,7 @@ namespace ASRR.Revit.Core.Elements.Parameters
                     return doc.GetElement(fascia.FasciaType.GetCompoundStructure().GetMaterialId(0)).Name;// as Material;
                 default:
                     var mat = doc.GetElement(element.GetMaterialIds(true).First()).Name; // as Material;
-                    Log.Info("returnd default value");
+                    Log.Debug("returnd default value");
                     return mat;
             }
         }

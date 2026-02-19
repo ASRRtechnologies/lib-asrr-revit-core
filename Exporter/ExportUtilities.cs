@@ -46,7 +46,7 @@ namespace ASRR.Revit.Core.Exporter
             File.Move(exportedPNG,
                 exportPath);
 
-            Log.Info($"Exporting PNG to: {exportPath}");
+            Log.Debug($"Exporting PNG to: {exportPath}");
         }
     }
 }
