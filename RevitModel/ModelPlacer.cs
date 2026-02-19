@@ -2,6 +2,7 @@
 using ASRR.Revit.Core.Warnings;
 using Autodesk.Revit.DB;
 using Autodesk.Revit.DB.Structure;
+using Autodesk.Revit.Exceptions;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -46,20 +47,38 @@ namespace ASRR.Revit.Core.RevitModel
                 
                 foreach (var sourceModelGroup in modelElementsInSourceDoc)
                 {
+                    if (sourceModelGroup == null || !sourceModelGroup.IsValidObject)
+                    {
+                        _logger.Warn($"Found invalid model element in '{filePath}'. Skipping..");
+                        continue;
+                    }
+
                     var group = sourceModelGroup as Group;
                     if (group == null)
                     {
-                        _logger.Warn($"Found model element '{sourceModelGroup.Name}' is not of type Group. Skipping..");
+                        _logger.Warn($"Found model element '{SafeElementName(sourceModelGroup)}' is not of type Group. Skipping..");
                         continue;
                     }
-                    var groupTypeSet = _groupTypeSetCreator.Create(sourceDoc, group, false);
-                    var groupTypeSetAsList = new List<GroupTypeSet> { groupTypeSet };
 
-                    var copiedGroupTypeSet =
-                        _groupTypeCopyPaster.CopyGroupTypeSets(sourceDoc, doc, groupTypeSetAsList).First();
-                   
-                        // _logger.Info($"Copied grouptypeset has {copiedGroupTypeSet.AttachedDetailGroupTypes.Count} atached deetail groups");
-                    _groupTypeCopyPaster.PlaceModelGroup(doc, copiedGroupTypeSet, group, new MillimeterPosition(position) );
+                    try
+                    {
+                        var groupTypeSet = _groupTypeSetCreator.Create(sourceDoc, group, false);
+                        var groupTypeSetAsList = new List<GroupTypeSet> { groupTypeSet };
+                        var copiedGroupTypeSets = _groupTypeCopyPaster.CopyGroupTypeSets(sourceDoc, doc, groupTypeSetAsList);
+                        var copiedGroupTypeSet = copiedGroupTypeSets?.FirstOrDefault();
+
+                        if (copiedGroupTypeSet == null)
+                        {
+                            _logger.Warn($"Failed to copy group type set for group '{SafeElementName(group)}' from '{filePath}'. Skipping..");
+                            continue;
+                        }
+
+                        _groupTypeCopyPaster.PlaceModelGroup(doc, copiedGroupTypeSet, group, new MillimeterPosition(position));
+                    }
+                    catch (InvalidObjectException ex)
+                    {
+                        _logger.Warn(ex, $"Skipping invalid group object while placing from '{filePath}'.");
+                    }
                 }
 
                 sourceDoc.Close(false);
@@ -170,6 +189,20 @@ namespace ASRR.Revit.Core.RevitModel
             var modelElements = ModelElementCollector.GetParentModelElements(doc).ToList();
             //_logger.Trace($"Found {modelElements.Count} modelgroups in source file");
             return modelElements;
+        }
+
+        private string SafeElementName(Element element)
+        {
+            if (element == null) return "(null)";
+            try
+            {
+                if (!element.IsValidObject) return "(invalid)";
+                return element.Name;
+            }
+            catch (InvalidObjectException)
+            {
+                return "(invalid)";
+            }
         }
     }
 }
