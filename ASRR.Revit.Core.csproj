@@ -242,6 +242,7 @@
     <Compile Include="UI\RibbonPanelCreator\IRibbonPanelCreator.cs" />
     <Compile Include="UI\RibbonPanelItemCreator\IRibbonPanelItemCreator.cs" />
     <Compile Include="UI\RibbonPanelItemCreator\PushButtonRibbonPanelItemCreator.cs" />
+    <Compile Include="UI\RibbonPanelItemCreator\StackedButtonsRibbonPanelItemCreator.cs" />
     <Compile Include="Utilities\DocumentUtilities.cs" />
     <Compile Include="Utilities\RoomUtilities.cs" />
     <Compile Include="Utilities\WallUtilities.cs" />
