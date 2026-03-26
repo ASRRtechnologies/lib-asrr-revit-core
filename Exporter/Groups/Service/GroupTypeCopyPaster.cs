@@ -235,7 +235,14 @@ namespace ASRR.Revit.Core.Exporter.Groups.Service
             }
 
             var copiedGroupTypes =
-                copiedIds.Select(id => destinationDoc.GetElement(id) as GroupType).ToList();
+                copiedIds.Select(id => destinationDoc.GetElement(id) as GroupType).Where(gt => gt != null).ToList();
+
+            if (copiedGroupTypes.Count == 0)
+            {
+                _logger.Error(
+                    $"No GroupTypes found after copying grouptypeset '{groupTypeSet.ModelGroupType.Name}' — copied {copiedIds.Count} element(s) but none were GroupType");
+                return null;
+            }
 
             return CreateCopiedGroupTypeSet(groupTypeSet, copiedGroupTypes);
         }
