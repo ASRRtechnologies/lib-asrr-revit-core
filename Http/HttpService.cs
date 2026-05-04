@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
@@ -13,6 +14,10 @@ namespace ASRR.Revit.Core.Http
         private static readonly Logger _logger = LogManager.GetCurrentClassLogger();
         private readonly HttpClient _httpClient;
         private string _baseAddress;
+
+        // Set by Download() on a non-success HTTP response so callers can include
+        // the underlying status (401/403/404/...) in user-facing error messages.
+        public HttpStatusCode? LastErrorStatusCode { get; private set; }
 
         public HttpService()
         {
@@ -60,10 +65,27 @@ namespace ASRR.Revit.Core.Http
 
         public byte[] Download(string path)
         {
+            LastErrorStatusCode = null;
             var url = GetCleanUrl(path);
-            var response = RunTask(Task.Run(async () => await _httpClient.GetByteArrayAsync(url)), path);
-            if (response == null) _logger.Error($"Failed to download from {url} — response was null (check earlier log entries for the underlying exception)");
-            return response;
+            try
+            {
+                var response = _httpClient.GetAsync(url).GetAwaiter().GetResult();
+                if (!response.IsSuccessStatusCode)
+                {
+                    LastErrorStatusCode = response.StatusCode;
+                    _logger.Error($"HTTP download failed for '{path}'. Status: {(int)response.StatusCode} {response.StatusCode}");
+                    return null;
+                }
+                return response.Content.ReadAsByteArrayAsync().GetAwaiter().GetResult();
+            }
+            catch (Exception ex)
+            {
+                var innermost = ex;
+                while (innermost.InnerException != null) innermost = innermost.InnerException;
+                _logger.Error(ex.InnerException ?? ex,
+                    $"HTTP download failed for '{path}'. Root cause: [{innermost.GetType().Name}] {innermost.Message}");
+                return null;
+            }
         }
 
         public HttpResponseMessage Post(string path, HttpContent content)
